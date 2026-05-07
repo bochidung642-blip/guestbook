@@ -39,7 +39,7 @@ export default function Home() {
 
   return (
     <main className="max-w-2xl mx-auto py-12 px-4">
-      <h1 className="text-3xl font-bold mb-2">Guestbook</h1>
+      <h1 className="text-3xl font-bold mb-2">Lưu bút</h1>
       <p className="text-gray-500 mb-8">Để lại lời nhắn cho người ghé thăm sau bạn.</p>
 
       <form onSubmit={handleSubmit} className="mb-10 border border-gray-200 rounded-lg p-6 space-y-3">
