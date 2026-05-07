@@ -1,52 +1,131 @@
-# Guestbook — Fullstack Demo
+# Lưu Bút — Fullstack Demo
 
-App tối giản dạng "sổ lưu bút": ai cũng để lại được tên + lời nhắn, danh sách hiển thị mới nhất ở trên.
+> App sổ lưu bút tối giản: để lại tên + lời nhắn, danh sách hiển thị theo thứ tự mới nhất. Demo end-to-end một app fullstack từ code đến deploy, không có auth — vừa đủ chạm tới mọi tầng.
 
-Mục tiêu: demo end-to-end xây + deploy 1 app fullstack cho người khác tham khảo. Không có auth — vừa đủ chạm tới mọi tầng.
+---
 
-## Stack
+## Demo trực tiếp
 
-| Layer    | Technology   |
-|----------|--------------|
-| Frontend | Next.js 15   |
-| Backend  | FastAPI      |
-| Database | PostgreSQL   |
-| Deploy   | Railway      |
+| Service     | URL                                                          |
+|-------------|--------------------------------------------------------------|
+| Frontend    | https://humorous-energy-production.up.railway.app            |
+| Backend API | https://guestbook-production-86ab.up.railway.app             |
+| API Docs    | https://guestbook-production-86ab.up.railway.app/docs        |
+
+---
+
+## Tech Stack
+
+| Layer    | Technology                                      |
+|----------|-------------------------------------------------|
+| Frontend | Next.js 15 (App Router, TypeScript, Tailwind)   |
+| Backend  | Python FastAPI                                  |
+| Database | PostgreSQL                                      |
+| Deploy   | Railway (monorepo, 3 services)                  |
+
+---
 
 ## Cấu trúc repo
 
 ```
-guestbook/          ← monorepo
-├── api/            ← FastAPI backend
-└── web/            ← Next.js frontend
+guestbook/                  ← monorepo
+├── api/                    ← FastAPI backend
+│   ├── app/
+│   │   ├── main.py         ← FastAPI app + CORS
+│   │   ├── models.py       ← SQLAlchemy models
+│   │   ├── schemas.py      ← Pydantic schemas
+│   │   ├── database.py     ← DB engine + session
+│   │   └── routers/
+│   │       └── entries.py  ← API endpoints
+│   ├── alembic/            ← DB migrations
+│   ├── requirements.txt
+│   └── Procfile
+└── web/                    ← Next.js frontend
+    ├── app/
+    │   ├── page.tsx        ← Main UI
+    │   └── layout.tsx
+    └── lib/
+        └── api.ts          ← API client functions
 ```
 
-## Demo
+---
 
-| Service  | URL |
-|----------|-----|
-| Frontend | https://humorous-energy-production.up.railway.app |
-| Backend API | https://guestbook-production-86ab.up.railway.app |
+## API Endpoints
+
+| Method | Endpoint          | Mô tả                  |
+|--------|-------------------|------------------------|
+| GET    | `/entries/`       | Lấy tất cả entries     |
+| POST   | `/entries/`       | Tạo entry mới          |
+| DELETE | `/entries/{id}`   | Xóa entry theo id      |
+
+**Schema — Entry:**
+```json
+{
+  "id": 1,
+  "name": "Nguyen Van A",
+  "message": "Hello from guestbook!",
+  "created_at": "2026-05-07T10:00:00"
+}
+```
+
+---
 
 ## Chạy local
 
+### Yêu cầu
+- Python 3.11+
+- Node.js 18+
+- PostgreSQL (hoặc dùng Docker)
+
 ### Backend
+
 ```bash
 cd api
-cp .env.example .env   # điền DATABASE_URL
+cp .env.example .env        # điền DATABASE_URL
+python -m venv .venv
 .venv/Scripts/pip install -r requirements.txt
 .venv/Scripts/alembic upgrade head
 .venv/Scripts/uvicorn app.main:app --reload
+# → http://localhost:8000
 ```
 
 ### Frontend
+
 ```bash
 cd web
-cp .env.local.example .env.local
+cp .env.local.example .env.local   # điền NEXT_PUBLIC_API_URL
 npm install
 npm run dev
+# → http://localhost:3000
 ```
 
-## Deploy
+---
 
-Xem `PLAN.md` để biết các bước deploy lên Railway.
+## Environment Variables
+
+### Backend (`/api`)
+
+| Variable       | Ví dụ                                        | Mô tả                        |
+|----------------|----------------------------------------------|------------------------------|
+| DATABASE_URL   | `postgresql://user:pass@host:5432/guestbook` | PostgreSQL connection string |
+| CORS_ORIGINS   | `https://your-frontend.up.railway.app`       | Allowed origins (frontend)   |
+
+### Frontend (`/web`)
+
+| Variable            | Ví dụ                                    | Mô tả              |
+|---------------------|------------------------------------------|--------------------|
+| NEXT_PUBLIC_API_URL | `https://your-backend.up.railway.app`    | Backend Railway URL|
+
+---
+
+## Deploy lên Railway
+
+Railway tự động build và deploy khi push lên GitHub.
+
+| Service    | Root Directory | Start Command                                      |
+|------------|----------------|----------------------------------------------------|
+| backend    | `/api`         | `uvicorn app.main:app --host 0.0.0.0 --port $PORT` |
+| frontend   | `/web`         | Next.js build tự động                              |
+| PostgreSQL | —              | Railway managed                                    |
+
+Chi tiết từng bước xem tại [`PLAN.md`](./PLAN.md).
