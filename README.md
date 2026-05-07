@@ -21,6 +21,13 @@ guestbook/          ← monorepo
 └── web/            ← Next.js frontend
 ```
 
+## Demo
+
+| Service  | URL |
+|----------|-----|
+| Frontend | https://humorous-energy-production.up.railway.app |
+| Backend API | https://guestbook-production-86ab.up.railway.app |
+
 ## Chạy local
 
 ### Backend
