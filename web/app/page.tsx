@@ -42,7 +42,7 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-2">Guestbook</h1>
       <p className="text-gray-500 mb-8">Để lại lời nhắn cho người ghé thăm sau bạn.</p>
 
-      <form onSubmit={handleSubmit} className="mb-10 space-y-3">
+      <form onSubmit={handleSubmit} className="mb-10 border border-gray-200 rounded-lg p-6 space-y-3">
         <input
           type="text"
           placeholder="Họ tên của bạn"
@@ -61,35 +61,29 @@ export default function Home() {
         <button
           type="submit"
           disabled={submitting}
-          className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+          className="bg-gray-800 text-white px-6 py-2 rounded-md hover:bg-black disabled:opacity-50 transition-colors"
         >
           {submitting ? "Đang gửi..." : "Gửi lời nhắn"}
         </button>
       </form>
 
       <h2 className="text-xl font-semibold mb-4">Lời nhắn gần đây</h2>
-      <div className="space-y-4">
+      <div className="space-y-3">
         {entries.length === 0 && (
           <p className="text-gray-400 text-sm">Chưa có lời nhắn nào. Hãy là người đầu tiên!</p>
         )}
         {entries.map((entry) => (
           <div
             key={entry.id}
-            className="bg-white border border-gray-200 rounded-md p-4 flex justify-between items-start"
+            className="border border-gray-200 rounded-md p-4"
           >
-            <div>
+            <div className="flex justify-between items-center mb-1">
               <p className="font-semibold">{entry.name}</p>
-              <p className="text-gray-700 mt-1 text-sm">{entry.message}</p>
-              <p className="text-xs text-gray-400 mt-2">
-                {new Date(entry.created_at).toLocaleString()}
+              <p className="text-xs text-gray-400">
+                {new Date(entry.created_at).toLocaleString("vi-VN")}
               </p>
             </div>
-            <button
-              onClick={() => handleDelete(entry.id)}
-              className="text-red-400 hover:text-red-600 text-sm ml-4 shrink-0"
-            >
-              Delete
-            </button>
+            <p className="text-gray-700 text-sm">{entry.message}</p>
           </div>
         ))}
       </div>
