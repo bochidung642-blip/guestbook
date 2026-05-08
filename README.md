@@ -2,6 +2,33 @@
 
 > App sổ lưu bút tối giản: để lại tên + lời nhắn, danh sách hiển thị theo thứ tự mới nhất. Demo end-to-end một app fullstack từ code đến deploy, không có auth — vừa đủ chạm tới mọi tầng.
 
+![CI](https://github.com/bochidung642-blip/guestbook/actions/workflows/ci.yml/badge.svg)
+
+---
+
+## Kiến trúc hệ thống
+
+```mermaid
+graph TB
+    Browser["🌐 Browser"] --> FE["Next.js 15\n(TypeScript · Tailwind)"]
+    FE -->|"REST API"| BE["FastAPI\n(Python)"]
+    BE -->|"SQLAlchemy"| DB[("PostgreSQL")]
+    BE -->|"Alembic"| DB
+
+    subgraph Railway ["☁️ Railway (Production)"]
+        FE
+        BE
+        DB
+    end
+
+    subgraph Local ["💻 Local (Docker Compose)"]
+        FE2["Next.js :3000"]
+        BE2["FastAPI :8000"]
+        DB2[("Postgres :5432")]
+        FE2 --> BE2 --> DB2
+    end
+```
+
 ---
 
 ## Demo trực tiếp
@@ -72,13 +99,22 @@ guestbook/                  ← monorepo
 
 ## Chạy local
 
-### Yêu cầu
-- Python 3.11+
-- Node.js 18+
-- PostgreSQL (hoặc dùng Docker)
+### Cách 1 — Docker Compose (khuyên dùng)
 
-### Backend
+```bash
+git clone https://github.com/bochidung642-blip/guestbook.git
+cd guestbook
+docker compose up --build
+# Frontend → http://localhost:3000
+# Backend  → http://localhost:8000
+# API Docs → http://localhost:8000/docs
+```
 
+### Cách 2 — Thủ công
+
+**Yêu cầu:** Python 3.11+, Node.js 18+, PostgreSQL
+
+**Backend:**
 ```bash
 cd api
 cp .env.example .env        # điền DATABASE_URL
@@ -89,8 +125,7 @@ python -m venv .venv
 # → http://localhost:8000
 ```
 
-### Frontend
-
+**Frontend:**
 ```bash
 cd web
 cp .env.local.example .env.local   # điền NEXT_PUBLIC_API_URL
@@ -129,3 +164,20 @@ Railway tự động build và deploy khi push lên GitHub.
 | PostgreSQL | —              | Railway managed                                    |
 
 Chi tiết từng bước xem tại [`PLAN.md`](./PLAN.md).
+
+---
+
+## Lịch sử xây dựng
+
+Toàn bộ cuộc trò chuyện giữa người dùng và Claude Code trong quá trình xây dự án này được lưu lại:
+
+| File | Nội dung |
+|------|----------|
+| [`lich-su-tro-chuyen-fullstack.txt`](./lich-su-tro-chuyen-fullstack.txt) | Phần 1 — Ý tưởng → Chọn stack → Viết code |
+| [`lich-su-tro-chuyen-fullstack-phan2.txt`](./lich-su-tro-chuyen-fullstack-phan2.txt) | Phần 2 — Deploy Railway → Push README với live URLs |
+
+---
+
+## License
+
+[MIT](./LICENSE)
